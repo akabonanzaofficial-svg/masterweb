@@ -1,0 +1,1159 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Admin Panel - Multi Tenant CMS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+        /* ===== RESET & BASE ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: #F7FAFC;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #FFF;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+        h1,
+        h2,
+        h3,
+        h4 {
+            color: #1A202C;
+            margin-bottom: 16px;
+        }
+        hr {
+            margin: 30px 0;
+            border: 1px solid #E2E8F0;
+        }
+        label {
+            font-weight: 600;
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 4px;
+        }
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #CBD5E0;
+            border-radius: 4px;
+            font-family: inherit;
+            margin-bottom: 8px;
+        }
+        textarea {
+            resize: vertical;
+        }
+        button {
+            background: #1A365D;
+            color: #FFF;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: opacity 0.2s;
+        }
+        button:hover {
+            opacity: 0.9;
+        }
+        .btn-danger {
+            background: #E53E3E;
+        }
+        .btn-success {
+            background: #38A169;
+        }
+        .btn-warning {
+            background: #D69E2E;
+        }
+        .btn-sm {
+            padding: 5px 12px;
+            font-size: 14px;
+        }
+        .service-item,
+        .article-item {
+            border: 1px solid #E2E8F0;
+            padding: 12px;
+            margin: 8px 0;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .article-item .info {
+            flex: 1;
+            min-width: 150px;
+        }
+        .article-item .info .title {
+            font-weight: 600;
+        }
+        .article-item .info .status {
+            font-size: 14px;
+            color: #718096;
+        }
+        .login-box {
+            max-width: 400px;
+            margin: 100px auto;
+        }
+        .error {
+            color: #E53E3E;
+            margin-top: 8px;
+        }
+        .success {
+            color: #38A169;
+            margin-top: 8px;
+        }
+        .flex {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        .flex-between {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        #adminPanel {
+            display: none;
+        }
+        .tenant-selector {
+            background: #EDF2F7;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .tenant-selector label {
+            margin: 0;
+            font-weight: 700;
+            color: #1A202C;
+        }
+        .tenant-selector select {
+            flex: 1;
+            min-width: 200px;
+            margin: 0;
+            background: #FFF;
+        }
+        .tenant-badge {
+            background: #1A365D;
+            color: #FFF;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+        .grid-3 {
+            display: grid;
+            grid-template-columns: 1fr 2fr 2fr;
+            gap: 10px;
+        }
+        .grid-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+        .hidden-form {
+            display: none;
+            background: #F7FAFC;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            border: 1px solid #E2E8F0;
+        }
+        .hidden-form.active {
+            display: block;
+        }
+        .toggle-link {
+            color: #1A365D;
+            cursor: pointer;
+            font-weight: 600;
+            text-decoration: underline;
+        }
+        @media (max-width: 600px) {
+            .grid-3 {
+                grid-template-columns: 1fr;
+            }
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+        /* Super Admin Tools */
+        #superAdminTools {
+            display: none;
+            background: #F0FFF4;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #C6F6D5;
+        }
+        #superAdminTools h3 {
+            color: #22543D;
+            margin-bottom: 10px;
+        }
+        #superAdminTools .grid-2 {
+            margin-top: 10px;
+        }
+        .badge-published {
+            background: #38A169;
+            color: #FFF;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+        .badge-draft {
+            background: #A0AEC0;
+            color: #FFF;
+            padding: 2px 10px;
+            border-radius: 12px;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ==========================================
+    LOGIN FORM
+    ========================================== -->
+    <div id="loginContainer" class="container login-box">
+        <h1>🔐 Login Admin</h1>
+        <form id="loginForm">
+            <label>Email</label>
+            <input type="email" id="loginEmail" required />
+            <label>Password</label>
+            <input type="password" id="loginPassword" required />
+            <button type="submit" style="width:100%; margin-top:16px;">Login</button>
+            <div id="loginError" class="error"></div>
+        </form>
+    </div>
+
+    <!-- ==========================================
+    ADMIN PANEL
+    ========================================== -->
+    <div id="adminPanel" class="container">
+        <div class="flex-between">
+            <h1>⚙️ Dashboard CMS</h1>
+            <div class="flex">
+                <button class="btn-warning" onclick="window.location.href='/';">Lihat Website</button>
+                <button class="btn-danger" id="logoutBtn">Logout</button>
+            </div>
+        </div>
+        <hr />
+
+        <!-- ===== TENANT SELECTOR (KHUSUS SUPER ADMIN) ===== -->
+        <div id="tenantSelectorContainer" class="tenant-selector">
+            <label for="tenantSelector">🏢 Pilih Perusahaan:</label>
+            <select id="tenantSelector"></select>
+            <span id="currentTenantBadge" class="tenant-badge">Memuat...</span>
+        </div>
+
+        <!-- ===== SUPER ADMIN TOOLS (TAMBAH PERUSAHAAN) ===== -->
+        <div id="superAdminTools">
+            <h3>➕ Tambah Perusahaan Baru</h3>
+            <div class="grid-2">
+                <input type="text" id="newCompanyName" placeholder="Nama Perusahaan (contoh: PT Maju Jaya)" />
+                <input type="text" id="newCompanyDomain" placeholder="Custom Domain (contoh: majujaya.com)" />
+                <input type="text" id="newCompanySubdomain" placeholder="Subdomain (contoh: maju-jaya)" />
+                <select id="newCompanyType">
+                    <option value="company">Company Profile</option>
+                    <option value="personal">Personal Profile</option>
+                    <option value="news">Portal Berita</option>
+                    <option value="ecommerce">Toko Online</option>
+                </select>
+            </div>
+            <button id="addCompanyBtn" class="btn-success">🚀 Tambah Perusahaan</button>
+            <div id="addCompanyStatus"></div>
+        </div>
+
+        <!-- ===== TAB MENU ===== -->
+        <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
+            <button id="tabContent" class="btn btn-sm" style="background:#1A365D;">Konten Website</button>
+            <button id="tabArticles" class="btn btn-sm" style="background:#718096;">📰 Artikel & Berita</button>
+        </div>
+        <hr />
+
+        <!-- ==========================================
+        TAB 1: KONTEN WEBSITE (Hero, Layanan, About, Footer)
+        ========================================== -->
+        <div id="contentTab">
+            <!-- HERO -->
+            <h2>Hero Section</h2>
+            <label>Judul Hero</label>
+            <input type="text" id="editHeroTitle" />
+            <label>Subjudul</label>
+            <input type="text" id="editHeroSubtitle" />
+            <label>Teks Tombol</label>
+            <input type="text" id="editHeroButtonText" />
+            <label>Link Tombol</label>
+            <input type="text" id="editHeroButtonLink" />
+            <label>Background Image (URL)</label>
+            <input type="text" id="editHeroImage" />
+            <button id="saveHero">Simpan Hero</button>
+            <div id="heroStatus"></div>
+            <hr />
+
+            <!-- SERVICES -->
+            <h2>Layanan</h2>
+            <div id="servicesAdminList"></div>
+            <h3>Tambah Layanan Baru</h3>
+            <div class="grid-3">
+                <input type="text" id="newServiceIcon" placeholder="Icon (emoji)" value="🔧" />
+                <input type="text" id="newServiceName" placeholder="Nama Layanan" />
+                <input type="text" id="newServiceDesc" placeholder="Deskripsi" />
+            </div>
+            <button id="addService" class="btn-success">Tambah Layanan</button>
+            <hr />
+
+            <!-- ABOUT -->
+            <h2>Tentang Kami</h2>
+            <label>Judul</label>
+            <input type="text" id="editAboutTitle" />
+            <label>Deskripsi</label>
+            <textarea id="editAboutDescription" rows="3"></textarea>
+            <label>Visi</label>
+            <input type="text" id="editAboutVision" />
+            <label>Misi (pisahkan dengan baris baru)</label>
+            <textarea id="editAboutMission" rows="3"></textarea>
+            <label>Gambar (URL)</label>
+            <input type="text" id="editAboutImage" />
+            <button id="saveAbout">Simpan Tentang Kami</button>
+            <hr />
+
+            <!-- FOOTER -->
+            <h2>Footer & Kontak</h2>
+            <label>Nama Perusahaan</label>
+            <input type="text" id="editFooterCompany" />
+            <label>Alamat</label>
+            <input type="text" id="editFooterAddress" />
+            <label>Telepon</label>
+            <input type="text" id="editFooterPhone" />
+            <label>Email</label>
+            <input type="text" id="editFooterEmail" />
+            <label>Media Sosial (JSON: {"instagram":"url","linkedin":"url"})</label>
+            <input type="text" id="editFooterSocial" />
+            <button id="saveFooter">Simpan Footer</button>
+            <div id="footerStatus"></div>
+        </div>
+
+        <!-- ==========================================
+        TAB 2: ARTIKEL & BERITA
+        ========================================== -->
+        <div id="articlesTab" style="display:none;">
+            <div class="flex-between">
+                <h2>📰 Daftar Artikel</h2>
+                <button id="showAddArticleForm" class="btn-success">+ Tambah Artikel</button>
+            </div>
+
+            <!-- Form Tambah/Edit Artikel -->
+            <div id="articleFormContainer" class="hidden-form">
+                <h3 id="articleFormTitle">Tambah Artikel Baru</h3>
+                <input type="hidden" id="editArticleId" />
+                <label>Judul Artikel</label>
+                <input type="text" id="articleTitle" placeholder="Judul berita..." />
+                <label>Slug (URL) <span style="font-weight:400; color:#718096;">(kosongkan untuk otomatis)</span></label>
+                <input type="text" id="articleSlug" placeholder="contoh: judul-berita" />
+                <label>Ringkasan (Excerpt)</label>
+                <textarea id="articleExcerpt" rows="2" placeholder="Ringkasan singkat..."></textarea>
+                <label>Konten (Isi Berita)</label>
+                <textarea id="articleContent" rows="6" placeholder="Tulis berita lengkap di sini..."></textarea>
+                <label>Gambar Unggulan (URL)</label>
+                <input type="text" id="articleImage" placeholder="https://example.com/gambar.jpg" />
+                <div class="grid-2">
+                    <div>
+                        <label>Status</label>
+                        <select id="articleStatus">
+                            <option value="true">Publish</option>
+                            <option value="false">Draft</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label>Tanggal Terbit</label>
+                        <input type="date" id="articleDate" />
+                    </div>
+                </div>
+                <div class="flex" style="margin-top:10px;">
+                    <button id="saveArticleBtn" class="btn-success">💾 Simpan Artikel</button>
+                    <button id="cancelArticleBtn" class="btn-danger">Batal</button>
+                </div>
+                <div id="articleFormStatus"></div>
+            </div>
+
+            <!-- Daftar Artikel -->
+            <div id="articlesList">
+                <p>Memuat artikel...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ========================================
+        // KONFIGURASI SUPABASE
+        // ========================================
+        const SUPABASE_URL = 'https://xxxxxxxxxxxxx.supabase.co'; // GANTI DENGAN URL ANDA
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.xxxxxxxxxxxx'; // GANTI DENGAN ANON KEY ANDA
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+        // ========================================
+        // DOM REFS
+        // ========================================
+        const $ = (id) => document.getElementById(id);
+        const loginContainer = $('loginContainer');
+        const adminPanel = $('adminPanel');
+        const loginForm = $('loginForm');
+        const loginError = $('loginError');
+        const logoutBtn = $('logoutBtn');
+        const tenantSelectorContainer = $('tenantSelectorContainer');
+        const tenantSelector = $('tenantSelector');
+        const currentTenantBadge = $('currentTenantBadge');
+        const superAdminTools = $('superAdminTools');
+
+        // Tabs
+        const tabContent = $('tabContent');
+        const tabArticles = $('tabArticles');
+        const contentTab = $('contentTab');
+        const articlesTab = $('articlesTab');
+
+        // Forms
+        const editHeroTitle = $('editHeroTitle');
+        const editHeroSubtitle = $('editHeroSubtitle');
+        const editHeroButtonText = $('editHeroButtonText');
+        const editHeroButtonLink = $('editHeroButtonLink');
+        const editHeroImage = $('editHeroImage');
+        const saveHeroBtn = $('saveHero');
+
+        const servicesAdminList = $('servicesAdminList');
+        const newServiceIcon = $('newServiceIcon');
+        const newServiceName = $('newServiceName');
+        const newServiceDesc = $('newServiceDesc');
+        const addServiceBtn = $('addService');
+
+        const editAboutTitle = $('editAboutTitle');
+        const editAboutDescription = $('editAboutDescription');
+        const editAboutVision = $('editAboutVision');
+        const editAboutMission = $('editAboutMission');
+        const editAboutImage = $('editAboutImage');
+        const saveAboutBtn = $('saveAbout');
+
+        const editFooterCompany = $('editFooterCompany');
+        const editFooterAddress = $('editFooterAddress');
+        const editFooterPhone = $('editFooterPhone');
+        const editFooterEmail = $('editFooterEmail');
+        const editFooterSocial = $('editFooterSocial');
+        const saveFooterBtn = $('saveFooter');
+
+        // Super Admin: Add Company
+        const newCompanyName = $('newCompanyName');
+        const newCompanyDomain = $('newCompanyDomain');
+        const newCompanySubdomain = $('newCompanySubdomain');
+        const newCompanyType = $('newCompanyType');
+        const addCompanyBtn = $('addCompanyBtn');
+        const addCompanyStatus = $('addCompanyStatus');
+
+        // Articles
+        const articlesList = $('articlesList');
+        const showAddArticleForm = $('showAddArticleForm');
+        const articleFormContainer = $('articleFormContainer');
+        const articleFormTitle = $('articleFormTitle');
+        const editArticleId = $('editArticleId');
+        const articleTitle = $('articleTitle');
+        const articleSlug = $('articleSlug');
+        const articleExcerpt = $('articleExcerpt');
+        const articleContent = $('articleContent');
+        const articleImage = $('articleImage');
+        const articleStatus = $('articleStatus');
+        const articleDate = $('articleDate');
+        const saveArticleBtn = $('saveArticleBtn');
+        const cancelArticleBtn = $('cancelArticleBtn');
+        const articleFormStatus = $('articleFormStatus');
+
+        // ========================================
+        // STATE
+        // ========================================
+        let currentUser = null;
+        let currentUserRole = null;
+        let currentTenant = null;
+        let currentBrand = null;
+        let currentSections = [];
+        let currentArticles = [];
+        let allTenants = [];
+        let isEditingArticle = false;
+
+        // ========================================
+        // FUNGSI FETCH DATA
+        // ========================================
+
+        async function fetchTenantByHostname() {
+            const hostname = window.location.hostname;
+            let { data, error } = await supabase
+                .from('tenants')
+                .select('*')
+                .eq('custom_domain', hostname)
+                .single();
+            if (error || !data) {
+                const { data: fallback } = await supabase.from('tenants').select('*').limit(1).single();
+                return fallback;
+            }
+            return data;
+        }
+
+        async function fetchAllTenants() {
+            const { data, error } = await supabase
+                .from('tenants')
+                .select('*')
+                .order('name', { ascending: true });
+            if (error) return [];
+            return data;
+        }
+
+        async function fetchBrand(tenantId) {
+            const { data, error } = await supabase
+                .from('brand_settings')
+                .select('*')
+                .eq('tenant_id', tenantId)
+                .single();
+            if (error) return null;
+            return data;
+        }
+
+        async function fetchSections(tenantId) {
+            const { data, error } = await supabase
+                .from('sections')
+                .select('*')
+                .eq('tenant_id', tenantId)
+                .eq('is_active', true)
+                .order('sort_order', { ascending: true });
+            if (error) return [];
+            return data;
+        }
+
+        async function fetchArticles(tenantId) {
+            const { data, error } = await supabase
+                .from('articles')
+                .select('*')
+                .eq('tenant_id', tenantId)
+                .order('published_at', { ascending: false });
+            if (error) return [];
+            return data;
+        }
+
+        // ========================================
+        // LOAD TENANT DATA
+        // ========================================
+        async function loadTenantData(tenantId) {
+            if (!tenantId) return;
+            const tenant = allTenants.find(t => t.id === tenantId) || await supabase.from('tenants').select('*').eq('id',
+                tenantId).single().then(res => res.data);
+            if (!tenant) return;
+
+            currentTenant = tenant;
+            currentBrand = await fetchBrand(tenantId);
+            currentSections = await fetchSections(tenantId);
+            currentArticles = await fetchArticles(tenantId);
+
+            if (currentTenantBadge) {
+                currentTenantBadge.textContent = `📌 ${currentTenant.name}`;
+            }
+
+            populateForms();
+            renderArticles();
+        }
+
+        // ========================================
+        // POPULATE FORM
+        // ========================================
+        function populateForms() {
+            if (!currentBrand) {
+                // Jika brand belum ada, buat default kosong
+                return;
+            }
+
+            editHeroTitle.value = currentBrand.hero_title || '';
+            editHeroSubtitle.value = currentBrand.hero_subtitle || '';
+            editHeroButtonText.value = currentBrand.hero_button_text || '';
+            editHeroButtonLink.value = currentBrand.hero_button_link || '';
+            editHeroImage.value = currentBrand.hero_image_url || currentBrand.background_image || '';
+
+            const aboutSection = currentSections.find(s => s.section_type === 'about_text');
+            const aboutContent = aboutSection?.content || {};
+            editAboutTitle.value = aboutContent.title || '';
+            editAboutDescription.value = aboutContent.description || '';
+            editAboutVision.value = aboutContent.vision || '';
+            editAboutMission.value = (aboutContent.mission && Array.isArray(aboutContent.mission)) ?
+                aboutContent.mission.join('\n') :
+                '';
+            editAboutImage.value = aboutContent.image || '';
+
+            editFooterCompany.value = currentTenant?.name || '';
+            editFooterAddress.value = currentBrand.company_address || '';
+            editFooterPhone.value = currentBrand.phone || '';
+            editFooterEmail.value = currentBrand.email || '';
+            editFooterSocial.value = JSON.stringify(currentBrand.social_media || {}, null, 2);
+
+            renderServicesAdmin();
+        }
+
+        function renderServicesAdmin() {
+            const serviceSection = currentSections.find(s => s.section_type === 'services_grid');
+            const items = serviceSection?.content?.items || [];
+            if (items.length === 0) {
+                servicesAdminList.innerHTML = '<p>Belum ada layanan.</p>';
+                return;
+            }
+            servicesAdminList.innerHTML = items.map((item, idx) => `
+                    <div class="service-item">
+                        <span><strong>${item.icon || ''}</strong> ${item.name} - ${item.description || ''}</span>
+                        <div>
+                            <button class="btn-danger btn-sm" data-idx="${idx}">Hapus</button>
+                        </div>
+                    </div>
+                `).join('');
+
+            servicesAdminList.querySelectorAll('.btn-danger').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const idx = parseInt(e.target.dataset.idx);
+                    await deleteService(idx);
+                });
+            });
+        }
+
+        // ========================================
+        // RENDER ARTICLES
+        // ========================================
+        function renderArticles() {
+            if (!currentArticles || currentArticles.length === 0) {
+                articlesList.innerHTML = '<p>Belum ada artikel. Klik "Tambah Artikel" untuk membuat.</p>';
+                return;
+            }
+            articlesList.innerHTML = currentArticles.map(article => `
+                    <div class="article-item" data-id="${article.id}">
+                        <div class="info">
+                            <div class="title">${article.title}</div>
+                            <div class="status">
+                                <span class="${article.is_published ? 'badge-published' : 'badge-draft'}">
+                                    ${article.is_published ? '✅ Published' : '📝 Draft'}
+                                </span>
+                                ${article.published_at ? ` | ${new Date(article.published_at).toLocaleDateString('id-ID')}` : ''}
+                                ${article.slug ? ` | slug: ${article.slug}` : ''}
+                            </div>
+                        </div>
+                        <div class="flex">
+                            <button class="btn-warning btn-sm edit-article-btn" data-id="${article.id}">✏️ Edit</button>
+                            <button class="btn-danger btn-sm delete-article-btn" data-id="${article.id}">🗑️ Hapus</button>
+                        </div>
+                    </div>
+                `).join('');
+
+            // Event listener Edit
+            articlesList.querySelectorAll('.edit-article-btn').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const id = e.target.dataset.id;
+                    const article = currentArticles.find(a => a.id === id);
+                    if (article) openArticleForm(article);
+                });
+            });
+
+            // Event listener Hapus
+            articlesList.querySelectorAll('.delete-article-btn').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    const id = e.target.dataset.id;
+                    if (confirm('Yakin ingin menghapus artikel ini?')) {
+                        await deleteArticle(id);
+                    }
+                });
+            });
+        }
+
+        // ========================================
+        // CRUD ARTICLES
+        // ========================================
+        function openArticleForm(article = null) {
+            isEditingArticle = !!article;
+            if (article) {
+                articleFormTitle.textContent = '✏️ Edit Artikel';
+                editArticleId.value = article.id;
+                articleTitle.value = article.title || '';
+                articleSlug.value = article.slug || '';
+                articleExcerpt.value = article.excerpt || '';
+                articleContent.value = article.content || '';
+                articleImage.value = article.featured_image || '';
+                articleStatus.value = article.is_published ? 'true' : 'false';
+                articleDate.value = article.published_at ? article.published_at.split('T')[0] : '';
+            } else {
+                articleFormTitle.textContent = '📝 Tambah Artikel Baru';
+                editArticleId.value = '';
+                articleTitle.value = '';
+                articleSlug.value = '';
+                articleExcerpt.value = '';
+                articleContent.value = '';
+                articleImage.value = '';
+                articleStatus.value = 'false';
+                articleDate.value = new Date().toISOString().split('T')[0];
+            }
+            articleFormContainer.classList.add('active');
+            articleFormStatus.textContent = '';
+        }
+
+        function closeArticleForm() {
+            articleFormContainer.classList.remove('active');
+            isEditingArticle = false;
+            editArticleId.value = '';
+        }
+
+        async function saveArticle() {
+            const title = articleTitle.value.trim();
+            if (!title) {
+                articleFormStatus.textContent = '❌ Judul wajib diisi.';
+                articleFormStatus.style.color = '#E53E3E';
+                return;
+            }
+
+            let slug = articleSlug.value.trim();
+            if (!slug) {
+                slug = title.toLowerCase()
+                    .replace(/[^a-z0-9\s-]/g, '')
+                    .replace(/\s+/g, '-');
+            }
+
+            const excerpt = articleExcerpt.value.trim();
+            const content = articleContent.value.trim();
+            const featured_image = articleImage.value.trim();
+            const is_published = articleStatus.value === 'true';
+            const published_at = articleDate.value || new Date().toISOString().split('T')[0];
+
+            const payload = {
+                tenant_id: currentTenant.id,
+                title,
+                slug,
+                excerpt,
+                content,
+                featured_image,
+                is_published,
+                published_at: new Date(published_at).toISOString(),
+            };
+
+            try {
+                if (isEditingArticle) {
+                    const id = editArticleId.value;
+                    const { error } = await supabase
+                        .from('articles')
+                        .update(payload)
+                        .eq('id', id);
+                    if (error) throw error;
+                } else {
+                    const { error } = await supabase
+                        .from('articles')
+                        .insert(payload);
+                    if (error) throw error;
+                }
+                // Refresh data
+                currentArticles = await fetchArticles(currentTenant.id);
+                renderArticles();
+                closeArticleForm();
+                articleFormStatus.textContent = '✅ Artikel berhasil disimpan!';
+                articleFormStatus.style.color = '#38A169';
+            } catch (e) {
+                articleFormStatus.textContent = '❌ Error: ' + e.message;
+                articleFormStatus.style.color = '#E53E3E';
+            }
+        }
+
+        async function deleteArticle(id) {
+            try {
+                const { error } = await supabase
+                    .from('articles')
+                    .delete()
+                    .eq('id', id);
+                if (error) throw error;
+                currentArticles = await fetchArticles(currentTenant.id);
+                renderArticles();
+                alert('✅ Artikel berhasil dihapus.');
+            } catch (e) {
+                alert('❌ Error: ' + e.message);
+            }
+        }
+
+        // ========================================
+        // CRUD OPERATIONS (Hero, Services, About, Footer)
+        // ========================================
+
+        async function updateBrand(fields) {
+            if (!currentBrand) {
+                const { data, error } = await supabase
+                    .from('brand_settings')
+                    .insert({
+                        tenant_id: currentTenant.id,
+                        ...fields
+                    })
+                    .select()
+                    .single();
+                if (error) throw error;
+                currentBrand = data;
+                return;
+            }
+            const { error } = await supabase
+                .from('brand_settings')
+                .update(fields)
+                .eq('id', currentBrand.id);
+            if (error) throw error;
+            currentBrand = await fetchBrand(currentTenant.id);
+        }
+
+        async function updateSection(sectionType, content) {
+            const section = currentSections.find(s => s.section_type === sectionType);
+            if (!section) {
+                const { data, error } = await supabase
+                    .from('sections')
+                    .insert({
+                        tenant_id: currentTenant.id,
+                        section_type: sectionType,
+                        content: content,
+                        is_active: true,
+                        sort_order: 999
+                    })
+                    .select();
+                if (error) throw error;
+                currentSections = await fetchSections(currentTenant.id);
+                return;
+            }
+            const { error } = await supabase
+                .from('sections')
+                .update({ content: content })
+                .eq('id', section.id);
+            if (error) throw error;
+            currentSections = await fetchSections(currentTenant.id);
+        }
+
+        async function addService(icon, name, desc) {
+            const serviceSection = currentSections.find(s => s.section_type === 'services_grid');
+            let content = serviceSection?.content || {};
+            let items = content.items || [];
+            items.push({ icon, name, description: desc });
+            content.items = items;
+            await updateSection('services_grid', content);
+            renderServicesAdmin();
+        }
+
+        async function deleteService(idx) {
+            const serviceSection = currentSections.find(s => s.section_type === 'services_grid');
+            if (!serviceSection) return;
+            let content = serviceSection.content || {};
+            let items = content.items || [];
+            if (idx >= 0 && idx < items.length) {
+                items.splice(idx, 1);
+                content.items = items;
+                await updateSection('services_grid', content);
+                renderServicesAdmin();
+            }
+        }
+
+        // ========================================
+        // SUPER ADMIN: TAMBAH PERUSAHAAN
+        // ========================================
+        async function addNewCompany() {
+            const name = newCompanyName.value.trim();
+            const domain = newCompanyDomain.value.trim();
+            const subdomain = newCompanySubdomain.value.trim();
+            const type = newCompanyType.value;
+
+            if (!name) {
+                addCompanyStatus.textContent = '❌ Nama perusahaan wajib diisi.';
+                addCompanyStatus.style.color = '#E53E3E';
+                return;
+            }
+            if (!domain && !subdomain) {
+                addCompanyStatus.textContent = '❌ Isi minimal Custom Domain atau Subdomain.';
+                addCompanyStatus.style.color = '#E53E3E';
+                return;
+            }
+
+            try {
+                // Insert tenant
+                const { data: tenant, error: tenantError } = await supabase
+                    .from('tenants')
+                    .insert({
+                        name,
+                        custom_domain: domain || null,
+                        subdomain: subdomain || null,
+                        website_type: type,
+                        is_active: true
+                    })
+                    .select()
+                    .single();
+                if (tenantError) throw tenantError;
+
+                // Buat default brand_settings agar tidak error saat diakses
+                const { error: brandError } = await supabase
+                    .from('brand_settings')
+                    .insert({
+                        tenant_id: tenant.id,
+                        primary_color: '#1A365D',
+                        secondary_color: '#D69E2E',
+                        font_family: 'Poppins',
+                        hero_title: 'Selamat Datang di ' + name,
+                        hero_subtitle: 'Company Profile',
+                        hero_button_text: 'Hubungi Kami',
+                    });
+                if (brandError) throw brandError;
+
+                addCompanyStatus.textContent = `✅ Perusahaan "${name}" berhasil dibuat!`;
+                addCompanyStatus.style.color = '#38A169';
+
+                // Reset form
+                newCompanyName.value = '';
+                newCompanyDomain.value = '';
+                newCompanySubdomain.value = '';
+
+                // Refresh dropdown dan pilih tenant baru
+                await populateTenantDropdown();
+                // Pilih tenant baru di dropdown
+                tenantSelector.value = tenant.id;
+                // Trigger change
+                tenantSelector.dispatchEvent(new Event('change'));
+
+            } catch (e) {
+                addCompanyStatus.textContent = '❌ Error: ' + e.message;
+                addCompanyStatus.style.color = '#E53E3E';
+            }
+        }
+
+        // ========================================
+        // DROPDOWN TENANT
+        // ========================================
+
+        async function populateTenantDropdown() {
+            allTenants = await fetchAllTenants();
+            if (!allTenants || allTenants.length === 0) {
+                tenantSelector.innerHTML = '<option value="">Tidak ada perusahaan</option>';
+                return;
+            }
+            const currentId = currentTenant?.id || allTenants[0]?.id;
+            tenantSelector.innerHTML = allTenants.map(t =>
+                `<option value="${t.id}" ${t.id === currentId ? 'selected' : ''}>${t.name} (${t.custom_domain || t.subdomain || 'no domain'})</option>`
+            ).join('');
+
+            if (!currentTenant && allTenants.length > 0) {
+                await loadTenantData(allTenants[0].id);
+            }
+        }
+
+        // Event listener dropdown
+        tenantSelector.addEventListener('change', async (e) => {
+            const tenantId = e.target.value;
+            if (tenantId) {
+                await loadTenantData(tenantId);
+                if (currentTenantBadge) currentTenantBadge.textContent = `📌 ${currentTenant.name}`;
+                // Tutup form artikel jika terbuka
+                closeArticleForm();
+            }
+        });
+
+        // ========================================
+        // EVENT LISTENERS
+        // ========================================
+
+        // --- Hero ---
+        saveHeroBtn.addEventListener('click', async () => {
+            try {
+                await updateBrand({
+                    hero_title: editHeroTitle.value,
+                    hero_subtitle: editHeroSubtitle.value,
+                    hero_button_text: editHeroButtonText.value,
+                    hero_button_link: editHeroButtonLink.value,
+                    hero_image_url: editHeroImage.value,
+                    background_image: editHeroImage.value,
+                });
+                alert('✅ Hero berhasil diupdate!');
+            } catch (e) { alert('❌ Error: ' + e.message); }
+        });
+
+        // --- About ---
+        saveAboutBtn.addEventListener('click', async () => {
+            try {
+                const mission = editAboutMission.value.split('\n').filter(m => m.trim() !== '');
+                await updateSection('about_text', {
+                    title: editAboutTitle.value,
+                    description: editAboutDescription.value,
+                    vision: editAboutVision.value,
+                    mission: mission,
+                    image: editAboutImage.value,
+                });
+                alert('✅ Tentang Kami berhasil diupdate!');
+                populateForms();
+            } catch (e) { alert('❌ Error: ' + e.message); }
+        });
+
+        // --- Service ---
+        addServiceBtn.addEventListener('click', async () => {
+            const icon = newServiceIcon.value.trim() || '🔧';
+            const name = newServiceName.value.trim();
+            const desc = newServiceDesc.value.trim();
+            if (!name) { alert('Nama layanan wajib diisi.'); return; }
+            await addService(icon, name, desc);
+            newServiceName.value = '';
+            newServiceDesc.value = '';
+            alert('✅ Layanan ditambahkan!');
+        });
+
+        // --- Footer ---
+        saveFooterBtn.addEventListener('click', async () => {
+            try {
+                let social = {};
+                try { social = JSON.parse(editFooterSocial.value); } catch (e) {
+                    alert('Format JSON media sosial salah. Contoh: {"instagram":"url","linkedin":"url"}');
+                    return;
+                }
+                await updateBrand({
+                    company_address: editFooterAddress.value,
+                    phone: editFooterPhone.value,
+                    email: editFooterEmail.value,
+                    social_media: social,
+                });
+                if (editFooterCompany.value !== currentTenant.name) {
+                    await supabase
+                        .from('tenants')
+                        .update({ name: editFooterCompany.value })
+                        .eq('id', currentTenant.id);
+                    currentTenant.name = editFooterCompany.value;
+                    if (currentTenantBadge) currentTenantBadge.textContent = `📌 ${currentTenant.name}`;
+                    if (currentUserRole === 'super_admin') {
+                        await populateTenantDropdown();
+                    }
+                }
+                alert('✅ Footer berhasil diupdate!');
+            } catch (e) { alert('❌ Error: ' + e.message); }
+        });
+
+        // --- Add Company (Super Admin) ---
+        addCompanyBtn.addEventListener('click', addNewCompany);
+
+        // --- Articles ---
+        showAddArticleForm.addEventListener('click', () => openArticleForm(null));
+        cancelArticleBtn.addEventListener('click', closeArticleForm);
+        saveArticleBtn.addEventListener('click', saveArticle);
+
+        // --- Tabs ---
+        tabContent.addEventListener('click', () => {
+            contentTab.style.display = 'block';
+            articlesTab.style.display = 'none';
+            tabContent.style.background = '#1A365D';
+            tabArticles.style.background = '#718096';
+        });
+        tabArticles.addEventListener('click', () => {
+            contentTab.style.display = 'none';
+            articlesTab.style.display = 'block';
+            tabArticles.style.background = '#1A365D';
+            tabContent.style.background = '#718096';
+            // Refresh articles saat tab dibuka
+            if (currentTenant) {
+                fetchArticles(currentTenant.id).then(arts => {
+                    currentArticles = arts;
+                    renderArticles();
+                });
+            }
+        });
+
+        // ========================================
+        // AUTHENTICATION
+        // ========================================
+
+        loginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+            loginError.textContent = '';
+            try {
+                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                if (error) throw error;
+
+                const { data: userData, error: userError } = await supabase
+                    .from('users')
+                    .select('role')
+                    .eq('id', data.user.id)
+                    .single();
+
+                if (userError || !userData) {
+                    await supabase.auth.signOut();
+                    throw new Error('Akun tidak terdaftar sebagai admin.');
+                }
+
+                const role = userData.role;
+                if (role !== 'super_admin' && role !== 'web_admin') {
+                    await supabase.auth.signOut();
+                    throw new Error('Role tidak diizinkan.');
+                }
+
+                currentUser = data.user;
+                currentUserRole = role;
+
+                loginContainer.style.display = 'none';
+                adminPanel.style.display = 'block';
+
+                if (role === 'super_admin') {
+                    tenantSelectorContainer.style.display = 'flex';
+                    superAdminTools.style.display = 'block';
+                    allTenants = await fetchAllTenants();
+                    if (allTenants && allTenants.length > 0) {
+                        await populateTenantDropdown();
+                        await loadTenantData(allTenants[0].id);
+                    } else {
+                        alert('Belum ada perusahaan. Silakan tambahkan menggunakan form di atas.');
+                    }
+                } else {
+                    tenantSelectorContainer.style.display = 'none';
+                    superAdminTools.style.display = 'none';
+                    const tenant = await fetchTenantByHostname();
+                    if (!tenant) {
+                        alert('Perusahaan tidak ditemukan untuk domain ini.');
+                        return;
+                    }
+                    await loadTenantData(tenant.id);
+                }
+                // Default tab: Content
+                tabContent.click();
+
+            } catch (err) {
+                loginError.textContent = 'Login gagal: ' + err.message;
+            }
+        });
+
+        logoutBtn.addEventListener('click', async () => {
+            await supabase.auth.signOut();
+            currentUser = null;
+            currentUserRole = null;
+            currentTenant = null;
+            loginContainer.style.display = 'block';
+            adminPanel.style.display = 'none';
+            tenantSelectorContainer.style.display = 'none';
+            superAdminTools.style.display = 'none';
+            loginError.textContent = '';
+        });
+
+        // Auto check session
+        (async function checkSession() {
+            const { data } = await supabase.auth.getSession();
+            if (data.session) {
+                loginForm.dispatchEvent(new Event('submit', { cancelable: true }));
+            }
+        })();
+    </script>
+</body>
+</html>
