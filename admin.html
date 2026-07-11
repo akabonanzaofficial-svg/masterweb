@@ -8,232 +8,48 @@
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
         /* ===== RESET & BASE ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: #F7FAFC;
-            padding: 20px;
-        }
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            background: #FFF;
-            padding: 30px;
-            border-radius: 12px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-        }
-        h1,
-        h2,
-        h3,
-        h4 {
-            color: #1A202C;
-            margin-bottom: 16px;
-        }
-        hr {
-            margin: 30px 0;
-            border: 1px solid #E2E8F0;
-        }
-        label {
-            font-weight: 600;
-            display: block;
-            margin-top: 12px;
-            margin-bottom: 4px;
-        }
-        input,
-        textarea,
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #CBD5E0;
-            border-radius: 4px;
-            font-family: inherit;
-            margin-bottom: 8px;
-        }
-        textarea {
-            resize: vertical;
-        }
-        button {
-            background: #1A365D;
-            color: #FFF;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 4px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: opacity 0.2s;
-        }
-        button:hover {
-            opacity: 0.9;
-        }
-        .btn-danger {
-            background: #E53E3E;
-        }
-        .btn-success {
-            background: #38A169;
-        }
-        .btn-warning {
-            background: #D69E2E;
-        }
-        .btn-sm {
-            padding: 5px 12px;
-            font-size: 14px;
-        }
-        .service-item,
-        .article-item {
-            border: 1px solid #E2E8F0;
-            padding: 12px;
-            margin: 8px 0;
-            border-radius: 4px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        .article-item .info {
-            flex: 1;
-            min-width: 150px;
-        }
-        .article-item .info .title {
-            font-weight: 600;
-        }
-        .article-item .info .status {
-            font-size: 14px;
-            color: #718096;
-        }
-        .login-box {
-            max-width: 400px;
-            margin: 100px auto;
-        }
-        .error {
-            color: #E53E3E;
-            margin-top: 8px;
-        }
-        .success {
-            color: #38A169;
-            margin-top: 8px;
-        }
-        .flex {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-        .flex-between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-        #adminPanel {
-            display: none;
-        }
-        .tenant-selector {
-            background: #EDF2F7;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-            align-items: center;
-            gap: 15px;
-            flex-wrap: wrap;
-        }
-        .tenant-selector label {
-            margin: 0;
-            font-weight: 700;
-            color: #1A202C;
-        }
-        .tenant-selector select {
-            flex: 1;
-            min-width: 200px;
-            margin: 0;
-            background: #FFF;
-        }
-        .tenant-badge {
-            background: #1A365D;
-            color: #FFF;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-        .grid-3 {
-            display: grid;
-            grid-template-columns: 1fr 2fr 2fr;
-            gap: 10px;
-        }
-        .grid-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-        .hidden-form {
-            display: none;
-            background: #F7FAFC;
-            padding: 20px;
-            border-radius: 8px;
-            margin: 15px 0;
-            border: 1px solid #E2E8F0;
-        }
-        .hidden-form.active {
-            display: block;
-        }
-        .toggle-link {
-            color: #1A365D;
-            cursor: pointer;
-            font-weight: 600;
-            text-decoration: underline;
-        }
-        @media (max-width: 600px) {
-            .grid-3 {
-                grid-template-columns: 1fr;
-            }
-            .grid-2 {
-                grid-template-columns: 1fr;
-            }
-        }
-        /* Super Admin Tools */
-        #superAdminTools {
-            display: none;
-            background: #F0FFF4;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            border: 1px solid #C6F6D5;
-        }
-        #superAdminTools h3 {
-            color: #22543D;
-            margin-bottom: 10px;
-        }
-        #superAdminTools .grid-2 {
-            margin-top: 10px;
-        }
-        .badge-published {
-            background: #38A169;
-            color: #FFF;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-        }
-        .badge-draft {
-            background: #A0AEC0;
-            color: #FFF;
-            padding: 2px 10px;
-            border-radius: 12px;
-            font-size: 12px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background: #F7FAFC; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; background: #FFF; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1, h2, h3, h4 { color: #1A202C; margin-bottom: 16px; }
+        hr { margin: 30px 0; border: 1px solid #E2E8F0; }
+        label { font-weight: 600; display: block; margin-top: 12px; margin-bottom: 4px; }
+        input, textarea, select { width: 100%; padding: 10px; border: 1px solid #CBD5E0; border-radius: 4px; font-family: inherit; margin-bottom: 8px; }
+        textarea { resize: vertical; }
+        button { background: #1A365D; color: #FFF; border: none; padding: 10px 20px; border-radius: 4px; cursor: pointer; font-weight: 600; transition: opacity 0.2s; }
+        button:hover { opacity: 0.9; }
+        .btn-danger { background: #E53E3E; }
+        .btn-success { background: #38A169; }
+        .btn-warning { background: #D69E2E; }
+        .btn-sm { padding: 5px 12px; font-size: 14px; }
+        .service-item, .article-item { border: 1px solid #E2E8F0; padding: 12px; margin: 8px 0; border-radius: 4px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        .article-item .info { flex: 1; min-width: 150px; }
+        .article-item .info .title { font-weight: 600; }
+        .article-item .info .status { font-size: 14px; color: #718096; }
+        .login-box { max-width: 400px; margin: 100px auto; }
+        .error { color: #E53E3E; margin-top: 8px; }
+        .success { color: #38A169; margin-top: 8px; }
+        .flex { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+        .flex-between { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px; }
+        #adminPanel { display: none; }
+        .tenant-selector { background: #EDF2F7; padding: 15px; border-radius: 8px; margin-bottom: 20px; display: none; align-items: center; gap: 15px; flex-wrap: wrap; }
+        .tenant-selector label { margin: 0; font-weight: 700; color: #1A202C; }
+        .tenant-selector select { flex: 1; min-width: 200px; margin: 0; background: #FFF; }
+        .tenant-badge { background: #1A365D; color: #FFF; padding: 4px 12px; border-radius: 20px; font-size: 14px; font-weight: 600; }
+        .grid-3 { display: grid; grid-template-columns: 1fr 2fr 2fr; gap: 10px; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .hidden-form { display: none; background: #F7FAFC; padding: 20px; border-radius: 8px; margin: 15px 0; border: 1px solid #E2E8F0; }
+        .hidden-form.active { display: block; }
+        #superAdminTools { display: none; background: #F0FFF4; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #C6F6D5; }
+        #superAdminTools h3 { color: #22543D; margin-bottom: 10px; }
+        .badge-published { background: #38A169; color: #FFF; padding: 2px 10px; border-radius: 12px; font-size: 12px; }
+        .badge-draft { background: #A0AEC0; color: #FFF; padding: 2px 10px; border-radius: 12px; font-size: 12px; }
+        @media (max-width: 600px) { .grid-3, .grid-2 { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
 
-    <!-- ==========================================
-    LOGIN FORM
-    ========================================== -->
+    <!-- Login -->
     <div id="loginContainer" class="container login-box">
         <h1>🔐 Login Admin</h1>
         <form id="loginForm">
@@ -246,9 +62,7 @@
         </form>
     </div>
 
-    <!-- ==========================================
-    ADMIN PANEL
-    ========================================== -->
+    <!-- Admin Panel -->
     <div id="adminPanel" class="container">
         <div class="flex-between">
             <h1>⚙️ Dashboard CMS</h1>
@@ -259,20 +73,20 @@
         </div>
         <hr />
 
-        <!-- ===== TENANT SELECTOR (KHUSUS SUPER ADMIN) ===== -->
+        <!-- Tenant Selector -->
         <div id="tenantSelectorContainer" class="tenant-selector">
             <label for="tenantSelector">🏢 Pilih Perusahaan:</label>
             <select id="tenantSelector"></select>
             <span id="currentTenantBadge" class="tenant-badge">Memuat...</span>
         </div>
 
-        <!-- ===== SUPER ADMIN TOOLS (TAMBAH PERUSAHAAN) ===== -->
+        <!-- Super Admin Tools -->
         <div id="superAdminTools">
             <h3>➕ Tambah Perusahaan Baru</h3>
             <div class="grid-2">
-                <input type="text" id="newCompanyName" placeholder="Nama Perusahaan (contoh: PT Maju Jaya)" />
-                <input type="text" id="newCompanyDomain" placeholder="Custom Domain (contoh: majujaya.com)" />
-                <input type="text" id="newCompanySubdomain" placeholder="Subdomain (contoh: maju-jaya)" />
+                <input type="text" id="newCompanyName" placeholder="Nama Perusahaan" />
+                <input type="text" id="newCompanyDomain" placeholder="Custom Domain" />
+                <input type="text" id="newCompanySubdomain" placeholder="Subdomain" />
                 <select id="newCompanyType">
                     <option value="company">Company Profile</option>
                     <option value="personal">Personal Profile</option>
@@ -284,18 +98,15 @@
             <div id="addCompanyStatus"></div>
         </div>
 
-        <!-- ===== TAB MENU ===== -->
+        <!-- Tabs -->
         <div style="display:flex; gap:10px; margin-bottom:20px; flex-wrap:wrap;">
             <button id="tabContent" class="btn btn-sm" style="background:#1A365D;">Konten Website</button>
             <button id="tabArticles" class="btn btn-sm" style="background:#718096;">📰 Artikel & Berita</button>
         </div>
         <hr />
 
-        <!-- ==========================================
-        TAB 1: KONTEN WEBSITE (Hero, Layanan, About, Footer)
-        ========================================== -->
+        <!-- Tab Konten -->
         <div id="contentTab">
-            <!-- HERO -->
             <h2>Hero Section</h2>
             <label>Judul Hero</label>
             <input type="text" id="editHeroTitle" />
@@ -308,10 +119,8 @@
             <label>Background Image (URL)</label>
             <input type="text" id="editHeroImage" />
             <button id="saveHero">Simpan Hero</button>
-            <div id="heroStatus"></div>
             <hr />
 
-            <!-- SERVICES -->
             <h2>Layanan</h2>
             <div id="servicesAdminList"></div>
             <h3>Tambah Layanan Baru</h3>
@@ -323,7 +132,6 @@
             <button id="addService" class="btn-success">Tambah Layanan</button>
             <hr />
 
-            <!-- ABOUT -->
             <h2>Tentang Kami</h2>
             <label>Judul</label>
             <input type="text" id="editAboutTitle" />
@@ -338,7 +146,6 @@
             <button id="saveAbout">Simpan Tentang Kami</button>
             <hr />
 
-            <!-- FOOTER -->
             <h2>Footer & Kontak</h2>
             <label>Nama Perusahaan</label>
             <input type="text" id="editFooterCompany" />
@@ -351,19 +158,14 @@
             <label>Media Sosial (JSON: {"instagram":"url","linkedin":"url"})</label>
             <input type="text" id="editFooterSocial" />
             <button id="saveFooter">Simpan Footer</button>
-            <div id="footerStatus"></div>
         </div>
 
-        <!-- ==========================================
-        TAB 2: ARTIKEL & BERITA
-        ========================================== -->
+        <!-- Tab Artikel -->
         <div id="articlesTab" style="display:none;">
             <div class="flex-between">
                 <h2>📰 Daftar Artikel</h2>
                 <button id="showAddArticleForm" class="btn-success">+ Tambah Artikel</button>
             </div>
-
-            <!-- Form Tambah/Edit Artikel -->
             <div id="articleFormContainer" class="hidden-form">
                 <h3 id="articleFormTitle">Tambah Artikel Baru</h3>
                 <input type="hidden" id="editArticleId" />
@@ -396,11 +198,7 @@
                 </div>
                 <div id="articleFormStatus"></div>
             </div>
-
-            <!-- Daftar Artikel -->
-            <div id="articlesList">
-                <p>Memuat artikel...</p>
-            </div>
+            <div id="articlesList"><p>Memuat artikel...</p></div>
         </div>
     </div>
 
@@ -408,9 +206,9 @@
         // ========================================
         // KONFIGURASI SUPABASE
         // ========================================
-        const SUPABASE_URL = 'https://kvwnxujcihnzndyideoo.supabase.co'; // GANTI DENGAN URL ANDA
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2d254dWpjaWhuem5keWlkZW9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3Mzk3NTMsImV4cCI6MjA5ODMxNTc1M30.83EjF2qc3SNu68IKHMurMgkPdYhPFpE7PY6n3Lhu23E'; // GANTI DENGAN ANON KEY ANDA
-        const supabase = window.supabase.createClient(https://kvwnxujcihnzndyideoo.supabase.co, eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2d254dWpjaWhuem5keWlkZW9vIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI3Mzk3NTMsImV4cCI6MjA5ODMxNTc1M30.83EjF2qc3SNu68IKHMurMgkPdYhPFpE7PY6n3Lhu23E);
+        const SUPABASE_URL = 'https://YOUR_PROJECT.supabase.co'; // GANTI
+        const SUPABASE_ANON_KEY = 'YOUR_ANON_KEY'; // GANTI
+        const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
         // ========================================
         // DOM REFS
@@ -426,13 +224,11 @@
         const currentTenantBadge = $('currentTenantBadge');
         const superAdminTools = $('superAdminTools');
 
-        // Tabs
         const tabContent = $('tabContent');
         const tabArticles = $('tabArticles');
         const contentTab = $('contentTab');
         const articlesTab = $('articlesTab');
 
-        // Forms
         const editHeroTitle = $('editHeroTitle');
         const editHeroSubtitle = $('editHeroSubtitle');
         const editHeroButtonText = $('editHeroButtonText');
@@ -460,7 +256,6 @@
         const editFooterSocial = $('editFooterSocial');
         const saveFooterBtn = $('saveFooter');
 
-        // Super Admin: Add Company
         const newCompanyName = $('newCompanyName');
         const newCompanyDomain = $('newCompanyDomain');
         const newCompanySubdomain = $('newCompanySubdomain');
@@ -468,7 +263,6 @@
         const addCompanyBtn = $('addCompanyBtn');
         const addCompanyStatus = $('addCompanyStatus');
 
-        // Articles
         const articlesList = $('articlesList');
         const showAddArticleForm = $('showAddArticleForm');
         const articleFormContainer = $('articleFormContainer');
@@ -498,9 +292,8 @@
         let isEditingArticle = false;
 
         // ========================================
-        // FUNGSI FETCH DATA
+        // FUNGSI FETCH
         // ========================================
-
         async function fetchTenantByHostname() {
             const hostname = window.location.hostname;
             let { data, error } = await supabase
@@ -561,7 +354,7 @@
         async function loadTenantData(tenantId) {
             if (!tenantId) return;
             const tenant = allTenants.find(t => t.id === tenantId) || await supabase.from('tenants').select('*').eq('id',
-                tenantId).single().then(res => res.data);
+                    tenantId).single().then(res => res.data);
             if (!tenant) return;
 
             currentTenant = tenant;
@@ -570,7 +363,7 @@
             currentArticles = await fetchArticles(tenantId);
 
             if (currentTenantBadge) {
-                currentTenantBadge.textContent = `📌 ${currentTenant.name}`;
+                currentTenantBadge.textContent = '📌 ' + currentTenant.name;
             }
 
             populateForms();
@@ -578,13 +371,10 @@
         }
 
         // ========================================
-        // POPULATE FORM
+        // POPULATE FORMS
         // ========================================
         function populateForms() {
-            if (!currentBrand) {
-                // Jika brand belum ada, buat default kosong
-                return;
-            }
+            if (!currentBrand) return;
 
             editHeroTitle.value = currentBrand.hero_title || '';
             editHeroSubtitle.value = currentBrand.hero_subtitle || '';
@@ -618,17 +408,16 @@
                 servicesAdminList.innerHTML = '<p>Belum ada layanan.</p>';
                 return;
             }
-            servicesAdminList.innerHTML = items.map((item, idx) => `
-                    <div class="service-item">
-                        <span><strong>${item.icon || ''}</strong> ${item.name} - ${item.description || ''}</span>
-                        <div>
-                            <button class="btn-danger btn-sm" data-idx="${idx}">Hapus</button>
-                        </div>
-                    </div>
-                `).join('');
+            servicesAdminList.innerHTML = items.map((item, idx) => {
+                return '<div class="service-item">' +
+                    '<span><strong>' + (item.icon || '') + '</strong> ' + item.name + ' - ' + (item.description || '') +
+                    '</span>' +
+                    '<div><button class="btn-danger btn-sm" data-idx="' + idx + '">Hapus</button></div>' +
+                    '</div>';
+            }).join('');
 
             servicesAdminList.querySelectorAll('.btn-danger').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
+                btn.addEventListener('click', async function(e) {
                     const idx = parseInt(e.target.dataset.idx);
                     await deleteService(idx);
                 });
@@ -643,37 +432,35 @@
                 articlesList.innerHTML = '<p>Belum ada artikel. Klik "Tambah Artikel" untuk membuat.</p>';
                 return;
             }
-            articlesList.innerHTML = currentArticles.map(article => `
-                    <div class="article-item" data-id="${article.id}">
-                        <div class="info">
-                            <div class="title">${article.title}</div>
-                            <div class="status">
-                                <span class="${article.is_published ? 'badge-published' : 'badge-draft'}">
-                                    ${article.is_published ? '✅ Published' : '📝 Draft'}
-                                </span>
-                                ${article.published_at ? ` | ${new Date(article.published_at).toLocaleDateString('id-ID')}` : ''}
-                                ${article.slug ? ` | slug: ${article.slug}` : ''}
-                            </div>
-                        </div>
-                        <div class="flex">
-                            <button class="btn-warning btn-sm edit-article-btn" data-id="${article.id}">✏️ Edit</button>
-                            <button class="btn-danger btn-sm delete-article-btn" data-id="${article.id}">🗑️ Hapus</button>
-                        </div>
-                    </div>
-                `).join('');
+            articlesList.innerHTML = currentArticles.map(function(article) {
+                return '<div class="article-item" data-id="' + article.id + '">' +
+                    '<div class="info">' +
+                    '<div class="title">' + article.title + '</div>' +
+                    '<div class="status">' +
+                    '<span class="' + (article.is_published ? 'badge-published' : 'badge-draft') + '">' +
+                    (article.is_published ? '✅ Published' : '📝 Draft') +
+                    '</span>' +
+                    (article.published_at ? ' | ' + new Date(article.published_at).toLocaleDateString('id-ID') : '') +
+                    (article.slug ? ' | slug: ' + article.slug : '') +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="flex">' +
+                    '<button class="btn-warning btn-sm edit-article-btn" data-id="' + article.id + '">✏️ Edit</button>' +
+                    '<button class="btn-danger btn-sm delete-article-btn" data-id="' + article.id + '">🗑️ Hapus</button>' +
+                    '</div>' +
+                    '</div>';
+            }).join('');
 
-            // Event listener Edit
-            articlesList.querySelectorAll('.edit-article-btn').forEach(btn => {
-                btn.addEventListener('click', (e) => {
+            articlesList.querySelectorAll('.edit-article-btn').forEach(function(btn) {
+                btn.addEventListener('click', function(e) {
                     const id = e.target.dataset.id;
-                    const article = currentArticles.find(a => a.id === id);
+                    const article = currentArticles.find(function(a) { return a.id === id; });
                     if (article) openArticleForm(article);
                 });
             });
 
-            // Event listener Hapus
-            articlesList.querySelectorAll('.delete-article-btn').forEach(btn => {
-                btn.addEventListener('click', async (e) => {
+            articlesList.querySelectorAll('.delete-article-btn').forEach(function(btn) {
+                btn.addEventListener('click', async function(e) {
                     const id = e.target.dataset.id;
                     if (confirm('Yakin ingin menghapus artikel ini?')) {
                         await deleteArticle(id);
@@ -685,9 +472,9 @@
         // ========================================
         // CRUD ARTICLES
         // ========================================
-        function openArticleForm(article = null) {
-            isEditingArticle = !!article;
+        function openArticleForm(article) {
             if (article) {
+                isEditingArticle = true;
                 articleFormTitle.textContent = '✏️ Edit Artikel';
                 editArticleId.value = article.id;
                 articleTitle.value = article.title || '';
@@ -698,6 +485,7 @@
                 articleStatus.value = article.is_published ? 'true' : 'false';
                 articleDate.value = article.published_at ? article.published_at.split('T')[0] : '';
             } else {
+                isEditingArticle = false;
                 articleFormTitle.textContent = '📝 Tambah Artikel Baru';
                 editArticleId.value = '';
                 articleTitle.value = '';
@@ -741,13 +529,13 @@
 
             const payload = {
                 tenant_id: currentTenant.id,
-                title,
-                slug,
-                excerpt,
-                content,
-                featured_image,
-                is_published,
-                published_at: new Date(published_at).toISOString(),
+                title: title,
+                slug: slug,
+                excerpt: excerpt,
+                content: content,
+                featured_image: featured_image,
+                is_published: is_published,
+                published_at: new Date(published_at).toISOString()
             };
 
             try {
@@ -764,7 +552,6 @@
                         .insert(payload);
                     if (error) throw error;
                 }
-                // Refresh data
                 currentArticles = await fetchArticles(currentTenant.id);
                 renderArticles();
                 closeArticleForm();
@@ -794,7 +581,6 @@
         // ========================================
         // CRUD OPERATIONS (Hero, Services, About, Footer)
         // ========================================
-
         async function updateBrand(fields) {
             if (!currentBrand) {
                 const { data, error } = await supabase
@@ -846,7 +632,7 @@
             const serviceSection = currentSections.find(s => s.section_type === 'services_grid');
             let content = serviceSection?.content || {};
             let items = content.items || [];
-            items.push({ icon, name, description: desc });
+            items.push({ icon: icon, name: name, description: desc });
             content.items = items;
             await updateSection('services_grid', content);
             renderServicesAdmin();
@@ -886,11 +672,10 @@
             }
 
             try {
-                // Insert tenant
                 const { data: tenant, error: tenantError } = await supabase
                     .from('tenants')
                     .insert({
-                        name,
+                        name: name,
                         custom_domain: domain || null,
                         subdomain: subdomain || null,
                         website_type: type,
@@ -900,7 +685,6 @@
                     .single();
                 if (tenantError) throw tenantError;
 
-                // Buat default brand_settings agar tidak error saat diakses
                 const { error: brandError } = await supabase
                     .from('brand_settings')
                     .insert({
@@ -914,19 +698,15 @@
                     });
                 if (brandError) throw brandError;
 
-                addCompanyStatus.textContent = `✅ Perusahaan "${name}" berhasil dibuat!`;
+                addCompanyStatus.textContent = '✅ Perusahaan "' + name + '" berhasil dibuat!';
                 addCompanyStatus.style.color = '#38A169';
 
-                // Reset form
                 newCompanyName.value = '';
                 newCompanyDomain.value = '';
                 newCompanySubdomain.value = '';
 
-                // Refresh dropdown dan pilih tenant baru
                 await populateTenantDropdown();
-                // Pilih tenant baru di dropdown
                 tenantSelector.value = tenant.id;
-                // Trigger change
                 tenantSelector.dispatchEvent(new Event('change'));
 
             } catch (e) {
@@ -938,7 +718,6 @@
         // ========================================
         // DROPDOWN TENANT
         // ========================================
-
         async function populateTenantDropdown() {
             allTenants = await fetchAllTenants();
             if (!allTenants || allTenants.length === 0) {
@@ -946,22 +725,22 @@
                 return;
             }
             const currentId = currentTenant?.id || allTenants[0]?.id;
-            tenantSelector.innerHTML = allTenants.map(t =>
-                `<option value="${t.id}" ${t.id === currentId ? 'selected' : ''}>${t.name} (${t.custom_domain || t.subdomain || 'no domain'})</option>`
-            ).join('');
+            tenantSelector.innerHTML = allTenants.map(function(t) {
+                return '<option value="' + t.id + '" ' + (t.id === currentId ? 'selected' : '') + '>' +
+                    t.name + ' (' + (t.custom_domain || t.subdomain || 'no domain') + ')' +
+                    '</option>';
+            }).join('');
 
             if (!currentTenant && allTenants.length > 0) {
                 await loadTenantData(allTenants[0].id);
             }
         }
 
-        // Event listener dropdown
-        tenantSelector.addEventListener('change', async (e) => {
+        tenantSelector.addEventListener('change', async function(e) {
             const tenantId = e.target.value;
             if (tenantId) {
                 await loadTenantData(tenantId);
-                if (currentTenantBadge) currentTenantBadge.textContent = `📌 ${currentTenant.name}`;
-                // Tutup form artikel jika terbuka
+                if (currentTenantBadge) currentTenantBadge.textContent = '📌 ' + currentTenant.name;
                 closeArticleForm();
             }
         });
@@ -970,8 +749,8 @@
         // EVENT LISTENERS
         // ========================================
 
-        // --- Hero ---
-        saveHeroBtn.addEventListener('click', async () => {
+        // Hero
+        saveHeroBtn.addEventListener('click', async function() {
             try {
                 await updateBrand({
                     hero_title: editHeroTitle.value,
@@ -985,10 +764,10 @@
             } catch (e) { alert('❌ Error: ' + e.message); }
         });
 
-        // --- About ---
-        saveAboutBtn.addEventListener('click', async () => {
+        // About
+        saveAboutBtn.addEventListener('click', async function() {
             try {
-                const mission = editAboutMission.value.split('\n').filter(m => m.trim() !== '');
+                const mission = editAboutMission.value.split('\n').filter(function(m) { return m.trim() !== ''; });
                 await updateSection('about_text', {
                     title: editAboutTitle.value,
                     description: editAboutDescription.value,
@@ -1001,8 +780,8 @@
             } catch (e) { alert('❌ Error: ' + e.message); }
         });
 
-        // --- Service ---
-        addServiceBtn.addEventListener('click', async () => {
+        // Add Service
+        addServiceBtn.addEventListener('click', async function() {
             const icon = newServiceIcon.value.trim() || '🔧';
             const name = newServiceName.value.trim();
             const desc = newServiceDesc.value.trim();
@@ -1013,8 +792,8 @@
             alert('✅ Layanan ditambahkan!');
         });
 
-        // --- Footer ---
-        saveFooterBtn.addEventListener('click', async () => {
+        // Footer
+        saveFooterBtn.addEventListener('click', async function() {
             try {
                 let social = {};
                 try { social = JSON.parse(editFooterSocial.value); } catch (e) {
@@ -1033,7 +812,7 @@
                         .update({ name: editFooterCompany.value })
                         .eq('id', currentTenant.id);
                     currentTenant.name = editFooterCompany.value;
-                    if (currentTenantBadge) currentTenantBadge.textContent = `📌 ${currentTenant.name}`;
+                    if (currentTenantBadge) currentTenantBadge.textContent = '📌 ' + currentTenant.name;
                     if (currentUserRole === 'super_admin') {
                         await populateTenantDropdown();
                     }
@@ -1042,29 +821,28 @@
             } catch (e) { alert('❌ Error: ' + e.message); }
         });
 
-        // --- Add Company (Super Admin) ---
+        // Add Company
         addCompanyBtn.addEventListener('click', addNewCompany);
 
-        // --- Articles ---
-        showAddArticleForm.addEventListener('click', () => openArticleForm(null));
+        // Articles
+        showAddArticleForm.addEventListener('click', function() { openArticleForm(null); });
         cancelArticleBtn.addEventListener('click', closeArticleForm);
         saveArticleBtn.addEventListener('click', saveArticle);
 
-        // --- Tabs ---
-        tabContent.addEventListener('click', () => {
+        // Tabs
+        tabContent.addEventListener('click', function() {
             contentTab.style.display = 'block';
             articlesTab.style.display = 'none';
             tabContent.style.background = '#1A365D';
             tabArticles.style.background = '#718096';
         });
-        tabArticles.addEventListener('click', () => {
+        tabArticles.addEventListener('click', function() {
             contentTab.style.display = 'none';
             articlesTab.style.display = 'block';
             tabArticles.style.background = '#1A365D';
             tabContent.style.background = '#718096';
-            // Refresh articles saat tab dibuka
             if (currentTenant) {
-                fetchArticles(currentTenant.id).then(arts => {
+                fetchArticles(currentTenant.id).then(function(arts) {
                     currentArticles = arts;
                     renderArticles();
                 });
@@ -1074,14 +852,13 @@
         // ========================================
         // AUTHENTICATION
         // ========================================
-
-        loginForm.addEventListener('submit', async (e) => {
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
             const email = document.getElementById('loginEmail').value;
             const password = document.getElementById('loginPassword').value;
             loginError.textContent = '';
             try {
-                const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+                const { data, error } = await supabase.auth.signInWithPassword({ email: email, password: password });
                 if (error) throw error;
 
                 const { data: userData, error: userError } = await supabase
@@ -1127,7 +904,6 @@
                     }
                     await loadTenantData(tenant.id);
                 }
-                // Default tab: Content
                 tabContent.click();
 
             } catch (err) {
@@ -1135,7 +911,7 @@
             }
         });
 
-        logoutBtn.addEventListener('click', async () => {
+        logoutBtn.addEventListener('click', async function() {
             await supabase.auth.signOut();
             currentUser = null;
             currentUserRole = null;
